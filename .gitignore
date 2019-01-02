@@ -4,3 +4,5 @@ debug
 build
 .idea
 *.swp
+mongo/find-broken-urls/broken-urls.csv
+mongo/load-data/files
