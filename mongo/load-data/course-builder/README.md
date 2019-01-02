@@ -17,4 +17,4 @@ The url should look something like the following `localhost:27017` or
 
 ### Dependency
 
-This script relies on the institution and raw data resources being available. To make sure the data gets imported correctly, first run the [institution-builder script](https://github.com/office-for-students/alpha-scripts/tree/feature/develop/mongo/institution-builder) and then [general-data-builder script](https://github.com/office-for-students/alpha-scripts/tree/feature/develop/mongo/general-data-builder)
+This script relies on the institution and raw data resources being available. To make sure the data gets imported correctly, first run the [institution-builder script](https://github.com/office-for-students/alpha-scripts/tree/develop/mongo/load-data/institution-builder) and then [general-data-builder script](https://github.com/office-for-students/alpha-scripts/tree/develop/mongo/load-data/general-data-builder)
