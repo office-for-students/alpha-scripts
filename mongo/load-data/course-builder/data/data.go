@@ -2,7 +2,7 @@ package data
 
 // Course represents a course resource
 type Course struct {
-	ApplicationProvider string             `bson:"application_uk_provider_reference_number,omitempty"`
+	ApplicationProvider string             `bson:"application_provider,omitempty"`
 	Country             *Country           `bson:"country"`
 	DistanceLearning    *DistanceLearning  `bson:"distance_learning"`
 	Foundation          string             `bson:"foundation_year_availability"` // enum
@@ -12,10 +12,11 @@ type Course struct {
 	Length              *LengthObject      `bson:"length_of_course"`
 	Links               *LinkList          `bson:"links"`
 	Location            *Location          `bson:"location"`
-	Mode                *Mode              `bson:"course_mode"` // enum - part time, full time, both
+	Mode                *Mode              `bson:"mode"` // enum - part time, full time, both
 	NHSFunded           *NHSFunded         `bson:"nhs_funded,omitempty"`
 	Qualification       *Qualification     `bson:"qualification"`
 	SandwichYear        *Availability      `bson:"sandwich_year"`
+	Statistics          *Statistics        `bson:"statistics,omitempty"`
 	Title               *Language          `bson:"title"`
 	UCASCode            string             `bson:"ucas_code_id,omitempty"`
 	YearAbroad          *Availability      `bson:"year_abroad"`
@@ -42,9 +43,10 @@ type DistanceLearning struct {
 
 // InstitutionObject represents institution data related to course
 type InstitutionObject struct {
-	Name        string `bson:"name"`
-	PublicUKPRN string `bson:"public_ukprn"`
-	UKPRN       string `bson:"ukprn"`
+	PublicUKPRNName string `bson:"public_ukprn_name"`
+	PublicUKPRN     string `bson:"public_ukprn"`
+	UKPRNName       string `bson:"ukprn_name"`
+	UKPRN           string `bson:"ukprn"`
 }
 
 // Language represents an object containing english or welsh strings
@@ -77,16 +79,16 @@ type Location struct {
 	Longitude string `bson:"longitude"`
 }
 
-// NHSFunded represents an object referring to the course having any NHS funded students
-type NHSFunded struct {
-	Code  string `bson:"code,omitempty"`
-	Label string `bson:"label,omitempty"`
-}
-
 // Mode represents an object referring to the type of course
 type Mode struct {
 	Code  string `bson:"code"`
 	Label string `bson:"label"`
+}
+
+// NHSFunded represents an object referring to the course having any NHS funded students
+type NHSFunded struct {
+	Code  string `bson:"code,omitempty"`
+	Label string `bson:"label,omitempty"`
 }
 
 // Qualification represents an object referring to the qualification received from course

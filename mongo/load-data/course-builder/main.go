@@ -16,6 +16,7 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/ofs/alpha-scripts/mongo/load-data/course-builder/data"
+	"github.com/ofs/alpha-scripts/mongo/load-data/course-builder/statistics"
 )
 
 var (
@@ -110,9 +111,15 @@ func createCourses(fileName string) error {
 			return err
 		}
 
-		institution, err := getInstitution(line[1])
+		institution, err := getInstitution("ukprn", line[1])
 		if err != nil {
 			log.Error(err, log.Data{"func": "getInstitution", "line_count": count, "ukprn": line[1]})
+			return err
+		}
+
+		publicInstitution, err := getInstitution("public_ukprn", line[0])
+		if err != nil {
+			log.Error(err, log.Data{"func": "getInstitution", "line_count": count, "public_ukprn": line[0]})
 			return err
 		}
 
@@ -142,9 +149,10 @@ func createCourses(fileName string) error {
 			Foundation: line[9],
 			Honours:    honours,
 			Institution: &data.InstitutionObject{
-				Name:        institution.Name,
-				UKPRN:       line[1],
-				PublicUKPRN: line[0],
+				UKPRNName:       institution.Name,
+				UKPRN:           line[1],
+				PublicUKPRNName: publicInstitution.Name,
+				PublicUKPRN:     line[0],
 			},
 			KISCourseID: line[16],
 			Length: &data.LengthObject{
@@ -239,6 +247,13 @@ func createCourses(fileName string) error {
 				Label: nhsFunded,
 			}
 		}
+
+		stats, err := statistics.Get(mongoURI, line[0], line[16], line[17])
+		if err != nil {
+			log.Error(err, log.Data{"func": "statistics.Get", "line_count": count, "csv_line": line})
+			return err
+		}
+		course.Statistics = stats
 
 		// Missing title for ucas code 'A16-H09'
 		if line[31] == "A16-H09" {
@@ -402,7 +417,7 @@ func addResource(course *data.Course) (err error) {
 	return
 }
 
-func getInstitution(ukprn string) (institution *institutionData.Institution, err error) {
+func getInstitution(key, value string) (institution *institutionData.Institution, err error) {
 	session, err := mgo.Dial(mongoURI)
 	if err != nil {
 		log.ErrorC("unable to create mongo session", err, nil)
@@ -410,7 +425,7 @@ func getInstitution(ukprn string) (institution *institutionData.Institution, err
 	}
 	defer session.Close()
 
-	if err = session.DB("institutions").C("institutions").Find(bson.M{"ukprn": ukprn}).One(&institution); err != nil {
+	if err = session.DB("institutions").C("institutions").Find(bson.M{key: value}).One(&institution); err != nil {
 		log.ErrorC("failed to find institution resource", err, nil)
 	}
 
