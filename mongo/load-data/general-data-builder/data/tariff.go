@@ -28,7 +28,7 @@ type Tariff struct {
 	Tariffs          []*TariffStats `bson:"tariff,omitempty"`       // T**
 	SubjectCode      string         `bson:"subject_code,omitempty"` // TARSBJ
 	UKPRN            string         `bson:"ukprn"`
-	Unavailable      bool           `bson:"unavailable"` // TARUNAVAILREASON
+	Unavailable      string         `bson:"unavailable,omitempty"` // TARUNAVAILREASON
 }
 
 // TariffStats contains entry data for a particular tariff

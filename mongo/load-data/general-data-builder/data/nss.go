@@ -42,5 +42,5 @@ type NSS struct {
 	Surveys          []*Survey `bson:"survey,omitempty"`
 	SubjectCode      string    `bson:"subject_code,omitempty"` // NSSSBJ
 	UKPRN            string    `bson:"ukprn"`
-	Unavailable      bool      `bson:"unavailable"` // NSSUNAVAILREASON
+	Unavailable      string    `bson:"unavailable,omitempty"` // NSSUNAVAILREASON
 }

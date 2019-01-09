@@ -29,7 +29,7 @@ func Get(mongoURI, publicUKPRN, kisCourseID, kisMode string) (*data.Statistics, 
 	var (
 		continuation []*data.Continuation
 		employment   []*data.Employment
-		jobList      []*data.JobList
+		jobList      data.JobList
 		jobType      []*data.JobType
 		leo          []*data.LEO
 		salary       []*data.Salary
@@ -83,7 +83,7 @@ func Get(mongoURI, publicUKPRN, kisCourseID, kisMode string) (*data.Statistics, 
 	stats := &data.Statistics{
 		Continuation: continuation,
 		Employment:   employment,
-		JobList:      jobList,
+		JobList:      &jobList,
 		JobType:      jobType,
 		LEO:          leo,
 		Salary:       salary,
@@ -122,7 +122,7 @@ func (stat *statConfig) employment() (results []*data.Employment, err error) {
 	return
 }
 
-func (stat *statConfig) jobList() (results []*data.JobList, err error) {
+func (stat *statConfig) jobList() (results data.JobList, err error) {
 	session, err := mgo.Dial(stat.uri)
 	if err != nil {
 		log.ErrorC("unable to create mongo session", err, nil)
@@ -134,6 +134,7 @@ func (stat *statConfig) jobList() (results []*data.JobList, err error) {
 
 	if err = session.DB("statistics").C("job-list").Find(bson.M{"public_ukprn": stat.publicUKPRN, "kis_course_id": stat.kisCourseID, "kis_mode": stat.kisMode}).All(&jobs); err != nil {
 		log.ErrorC("failed to find job list resources for course", err, nil)
+		return
 	}
 
 	m := make(map[int][]data.Job)
@@ -145,13 +146,29 @@ func (stat *statConfig) jobList() (results []*data.JobList, err error) {
 		m[job.Order] = append(m[job.Order], newJob)
 	}
 
+	var items []data.JobItem
 	for i := 1; i <= len(m); i++ {
-		jobList := &data.JobList{
-			Order: i,
+		item := data.JobItem{
 			List:  m[i],
+			Order: i,
 		}
-		results = append(results, jobList)
+		items = append(items, item)
 	}
+	results.Items = items
+
+	var common data.Common
+
+	// Get metadata for stats (common), e.g. aggregation level, response rate and number of students
+	if err = session.DB("statistics").C("common").Find(bson.M{"public_ukprn": stat.publicUKPRN, "kis_course_id": stat.kisCourseID, "kis_mode": stat.kisMode}).One(&common); err != nil {
+		log.ErrorC("failed to find job list resources for course", err, nil)
+		return
+	}
+
+	results.AggregationLevel = common.AggregationLevel
+	results.NumberOfStudents = common.NumberOfStudents
+	results.ResponseRate = common.ResponseRate
+	results.SubjectCode = common.SubjectCode
+	results.Unavailable = common.Unavailable
 
 	return
 }
@@ -205,6 +222,7 @@ func (stat *statConfig) salary() (salary []*data.Salary, err error) {
 			NumberOfGraduates: result.NumberOfStudents,
 			ResponseRate:      result.ResponseRate,
 			SubjectCode:       result.SubjectCode,
+			Unavailable:       result.Unavailable,
 		}
 
 		if result.InstitutionCourseSalarySixMonthsAfterGraduation != nil {

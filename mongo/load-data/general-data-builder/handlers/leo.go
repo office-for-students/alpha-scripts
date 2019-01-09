@@ -51,6 +51,7 @@ func (c *Common) CreateLongitudinalEducationOutcomes(database, collection, fileN
 			PublicUKPRN: line[0],
 			SubjectCode: line[7],
 			UKPRN:       line[1],
+			Unavailable: line[4],
 		}
 
 		if line[6] != "" {
@@ -86,10 +87,6 @@ func (c *Common) CreateLongitudinalEducationOutcomes(database, collection, fileN
 			if err != nil {
 				return err
 			}
-		}
-
-		if line[4] == "1" {
-			leoData.Unavailable = true
 		}
 
 		if err := m.AddLEOCourseStatistic(database, collection, leoData); err != nil {

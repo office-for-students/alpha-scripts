@@ -51,6 +51,7 @@ func (c *Common) CreateCommonData(database, collection, fileName string, counter
 			UKPRN:       line[1],
 			PublicUKPRN: line[0],
 			SubjectCode: line[8],
+			Unavailable: line[4],
 		}
 
 		if line[7] != "" {
@@ -72,10 +73,6 @@ func (c *Common) CreateCommonData(database, collection, fileName string, counter
 			if err != nil {
 				return err
 			}
-		}
-
-		if line[4] == "1" {
-			commonData.Unavailable = true
 		}
 
 		if err := m.AddCommonData(database, collection, commonData); err != nil {

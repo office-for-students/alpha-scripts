@@ -13,5 +13,5 @@ type JobType struct {
 	ResponseRate                                      int    `bson:"response_rate,omitempty"` // JONRESP_RATE
 	SubjectCode                                       string `bson:"subject_code,omitempty"`  // JOBSBJ
 	UKPRN                                             string `bson:"ukprn"`
-	Unavailable                                       bool   `bson:"unavailable"`
+	Unavailable                                       string `bson:"unavailable,omitempty"`
 }

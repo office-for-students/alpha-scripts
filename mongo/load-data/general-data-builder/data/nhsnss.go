@@ -21,7 +21,7 @@ type NHSNSS struct {
 	Surveys          []*Survey `bson:"survey,omitempty"`
 	SubjectCode      string    `bson:"subject_code,omitempty"` // NHSSBJ
 	UKPRN            string    `bson:"ukprn"`
-	Unavailable      bool      `bson:"unavailable"` // NHSUNAVAILREASON
+	Unavailable      string    `bson:"unavailable,omitempty"` // NHSUNAVAILREASON
 }
 
 // Survey contains a result for NSS question

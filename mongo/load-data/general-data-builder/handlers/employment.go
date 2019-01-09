@@ -51,6 +51,7 @@ func (c *Common) CreateEmployment(database, collection, fileName string, counter
 			PublicUKPRN: line[0],
 			SubjectCode: line[8],
 			UKPRN:       line[1],
+			Unavailable: line[4],
 		}
 
 		if line[7] != "" {
@@ -114,10 +115,6 @@ func (c *Common) CreateEmployment(database, collection, fileName string, counter
 			if err != nil {
 				return err
 			}
-		}
-
-		if line[4] == "1" {
-			employment.Unavailable = true
 		}
 
 		if err := m.AddEmployment(database, collection, employment); err != nil {

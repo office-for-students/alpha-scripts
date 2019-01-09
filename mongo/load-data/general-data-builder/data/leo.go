@@ -12,5 +12,5 @@ type Leo struct {
 	PublicUKPRN         string `bson:"public_ukprn"`
 	SubjectCode         string `bson:"subject_code,omitempty"` // LEOSBJ
 	UKPRN               string `bson:"ukprn"`
-	Unavailable         bool   `bson:"unavailable"` // LEOUNAVAILREASON
+	Unavailable         string `bson:"unavailable,omitempty"` // LEOUNAVAILREASON
 }

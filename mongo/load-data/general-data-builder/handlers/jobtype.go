@@ -51,6 +51,7 @@ func (c *Common) CreateJobType(database, collection, fileName string, counter ch
 			PublicUKPRN: line[0],
 			SubjectCode: line[8],
 			UKPRN:       line[1],
+			Unavailable: line[4],
 		}
 
 		if line[7] != "" {
@@ -93,10 +94,6 @@ func (c *Common) CreateJobType(database, collection, fileName string, counter ch
 			if err != nil {
 				return err
 			}
-		}
-
-		if line[4] == "1" {
-			jobType.Unavailable = true
 		}
 
 		if err := m.AddJobType(database, collection, jobType); err != nil {

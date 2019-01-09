@@ -16,5 +16,5 @@ type Employment struct {
 	ResponseRate                                   int    `bson:"response_rate,omitempty"` // EMPRESP_RATE
 	SubjectCode                                    string `bson:"subject_code,omitempty"`  // EMPSBJ
 	UKPRN                                          string `bson:"ukprn"`
-	Unavailable                                    bool   `bson:"unavailable"` // EMPUNAVAILREASON
+	Unavailable                                    string `bson:"unavailable,omitempty"` // EMPUNAVAILREASON
 }

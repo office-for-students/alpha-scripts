@@ -51,6 +51,7 @@ func (c *Common) CreateDegreeClass(database, collection, fileName string, counte
 			PublicUKPRN: line[0],
 			SubjectCode: line[7],
 			UKPRN:       line[1],
+			Unavailable: line[4],
 		}
 
 		if line[6] != "" {
@@ -128,10 +129,6 @@ func (c *Common) CreateDegreeClass(database, collection, fileName string, counte
 			if err != nil {
 				return err
 			}
-		}
-
-		if line[4] == "1" {
-			degreeClass.Unavailable = true
 		}
 
 		if err := m.AddDegreeClass(database, collection, degreeClass); err != nil {

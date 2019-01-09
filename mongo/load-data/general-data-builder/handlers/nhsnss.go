@@ -51,6 +51,7 @@ func (c *Common) CreateNHSNSS(database, collection, fileName string, counter cha
 			PublicUKPRN: line[0],
 			SubjectCode: line[8],
 			UKPRN:       line[1],
+			Unavailable: line[4],
 		}
 
 		if line[7] != "" {
@@ -93,10 +94,6 @@ func (c *Common) CreateNHSNSS(database, collection, fileName string, counter cha
 		}
 
 		nhsNSS.Surveys = surveys
-
-		if line[4] == "1" {
-			nhsNSS.Unavailable = true
-		}
 
 		if err := m.AddNHSNSS(database, collection, nhsNSS); err != nil {
 			log.ErrorC("failed to add nhs nss resource", err, log.Data{"line_count": count, "nhs_nss_resource": nhsNSS})

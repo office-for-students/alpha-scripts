@@ -51,6 +51,7 @@ func (c *Common) CreateEntry(database, collection, fileName string, counter chan
 			PublicUKPRN: line[0],
 			SubjectCode: line[7],
 			UKPRN:       line[1],
+			Unavailable: line[4],
 		}
 
 		if line[6] != "" {
@@ -121,10 +122,6 @@ func (c *Common) CreateEntry(database, collection, fileName string, counter chan
 			if err != nil {
 				return err
 			}
-		}
-
-		if line[4] == "1" {
-			entry.Unavailable = true
 		}
 
 		if err := m.AddEntry(database, collection, entry); err != nil {

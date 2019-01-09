@@ -51,6 +51,7 @@ func (c *Common) CreateTariff(database, collection, fileName string, counter cha
 			PublicUKPRN: line[0],
 			SubjectCode: line[7],
 			UKPRN:       line[1],
+			Unavailable: line[4],
 		}
 
 		if line[6] != "" {
@@ -89,10 +90,6 @@ func (c *Common) CreateTariff(database, collection, fileName string, counter cha
 		}
 
 		tariff.Tariffs = tariffs
-
-		if line[4] == "1" {
-			tariff.Unavailable = true
-		}
 
 		if err := m.AddTariff(database, collection, tariff); err != nil {
 			log.ErrorC("failed to add tariff resource", err, log.Data{"line_count": count, "tariff_resource": tariff})

@@ -18,5 +18,5 @@ type DegreeClass struct {
 	PublicUKPRN                                string `bson:"public_ukprn"`
 	SubjectCode                                string `bson:"subject_code,omitempty"` // DEGSBJ
 	UKPRN                                      string `bson:"ukprn"`
-	Unavailable                                bool   `bson:"unavailable"` // DEGUNAVAILREASON
+	Unavailable                                string `bson:"unavailable,omitempty"` // DEGUNAVAILREASON
 }

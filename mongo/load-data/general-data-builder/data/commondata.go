@@ -10,5 +10,5 @@ type CommonData struct {
 	ResponseRate     int    `bson:"response_rate,omitempty"` // COMRESP_RATE
 	SubjectCode      string `bson:"subject_code,omitempty"`  // COMSBJ
 	UKPRN            string `bson:"ukprn"`
-	Unavailable      bool   `bson:"unavailable"` // COMUNAVAILREASON
+	Unavailable      string `bson:"unavailable,omitempty"` // COMUNAVAILREASON
 }

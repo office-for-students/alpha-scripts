@@ -52,6 +52,7 @@ func (c *Common) CreateSalary(database, collection, fileName string, counter cha
 			PublicUKPRN: line[0],
 			SubjectCode: line[8],
 			UKPRN:       line[1],
+			Unavailable: line[4],
 		}
 
 		if line[7] != "" {
@@ -139,10 +140,6 @@ func (c *Common) CreateSalary(database, collection, fileName string, counter cha
 			if err != nil {
 				return err
 			}
-		}
-
-		if line[4] == "1" {
-			salary.Unavailable = true
 		}
 
 		if err := m.AddSalary(database, collection, salary); err != nil {

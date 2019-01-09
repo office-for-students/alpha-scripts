@@ -176,12 +176,12 @@ func createCourses(fileName string) error {
 					English: line[27],
 					Welsh:   line[28],
 				},
-				Institution: "https://localhost:10000/institutions/" + institution.UKPRN,
+				Institution: "https://localhost:10000/institutions/" + institution.PublicUKPRN,
 				LearningAndTeaching: &data.Language{
 					English: line[22],
 					Welsh:   line[23],
 				},
-				Self: "https://localhost:10000/institutions/" + institution.UKPRN + "/courses/" + line[29],
+				Self: "https://localhost:10000/institutions/" + institution.PublicUKPRN + "/courses/" + line[16] + "/modes/" + line[17],
 			},
 			Location: &data.Location{},
 			Mode: &data.Mode{

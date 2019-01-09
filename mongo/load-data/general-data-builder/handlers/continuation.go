@@ -51,6 +51,7 @@ func (c *Common) CreateContinuation(database, collection, fileName string, count
 			PublicUKPRN: line[0],
 			SubjectCode: line[7],
 			UKPRN:       line[1],
+			Unavailable: line[4],
 		}
 
 		if line[6] != "" {
@@ -100,10 +101,6 @@ func (c *Common) CreateContinuation(database, collection, fileName string, count
 			if err != nil {
 				return err
 			}
-		}
-
-		if line[4] == "1" {
-			continuation.Unavailable = true
 		}
 
 		if err := m.AddContinuation(database, collection, continuation); err != nil {
