@@ -7,6 +7,7 @@ type Course struct {
 	DistanceLearning    *DistanceLearning  `bson:"distance_learning"`
 	Foundation          string             `bson:"foundation_year_availability"` // enum
 	Honours             bool               `bson:"honours_award_provision"`
+	ID                  string             `bson:"_id"`
 	Institution         *InstitutionObject `bson:"institution"`
 	KISCourseID         string             `bson:"kis_course_id"`
 	Length              *LengthObject      `bson:"length_of_course"`

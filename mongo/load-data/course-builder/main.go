@@ -11,6 +11,7 @@ import (
 
 	generalData "github.com/ofs/alpha-scripts/mongo/load-data/general-data-builder/data"
 	institutionData "github.com/ofs/alpha-scripts/mongo/load-data/institution-builder/data"
+	uuid "github.com/satori/go.uuid"
 
 	"github.com/ONSdigital/go-ns/log"
 	"github.com/globalsign/mgo"
@@ -136,6 +137,12 @@ func createCourses(fileName string) error {
 			return err
 		}
 
+		id, err := uuid.NewV4()
+		if err != nil {
+			log.Error(err, log.Data{"func": "uuid.NewV4", "line_count": count})
+			return err
+		}
+
 		course := &data.Course{
 			ApplicationProvider: line[32],
 			Country: &data.Country{
@@ -148,6 +155,7 @@ func createCourses(fileName string) error {
 			},
 			Foundation: line[9],
 			Honours:    honours,
+			ID:         id.String(),
 			Institution: &data.InstitutionObject{
 				UKPRNName:       institution.Name,
 				UKPRN:           line[1],
