@@ -59,7 +59,7 @@ func createCourses(fileName string) error {
 	}
 	csvReader := csv.NewReader(bufio.NewReader(csvFile))
 
-	// Scan header row (not needed)
+	// Scan header row (not used)
 	_, err = csvReader.Read()
 	if err != nil {
 		log.ErrorC("encountered error immediately when processing header row", err, nil)
@@ -125,10 +125,19 @@ func createCourses(fileName string) error {
 		}
 
 		var missingLocationID bool
-		locationIDObject, err := getLocationID(line[0], line[16], line[17])
+		courseLocationID := ""
+		courseLocation, err := getCourseLocation(line[1], line[0], line[16], line[17])
 		if err != nil {
 			log.Error(err, log.Data{"func": "getLocationIDObject", "line_count": count, "public_ukprn": line[0], "course_id": line[16], "course_mode": line[17]})
 			missingLocationID = true
+		} else {
+			courseLocationID = courseLocation.ID
+		}
+
+		// Find teaching location based on courseLocation.ID within locations array inside either publicInstitution or Institution resource
+		teachingLocation, err := findTeachingLocation(missingLocationID, institution.Locations, publicInstitution.Locations, courseLocationID)
+		if err != nil {
+			log.Error(err, log.Data{"func": "findTeachingLocation", "line_count": count, "public_ukprn": line[0], "course_id": line[16], "course_mode": line[17]})
 		}
 
 		qualification, err := getQualification(line[34])
@@ -211,15 +220,29 @@ func createCourses(fileName string) error {
 			},
 		}
 
-		if !missingLocationID {
-			location, err := getLocation(line[1], locationIDObject.ID)
-			if err != nil {
-				log.Error(err, log.Data{"func": "getLocation", "line_count": count, "location_id": locationIDObject.ID, "ukprn": line[1]})
-				return err
+		if teachingLocation != nil && teachingLocation.Latitude != "" {
+			course.Location.Latitude = teachingLocation.Latitude
+			course.Location.Longitude = teachingLocation.Longitude
+			course.Location.Name = &data.Language{
+				English: teachingLocation.Name.English,
+				Welsh:   teachingLocation.Name.Welsh,
 			}
 
-			course.Location.Latitude = location.Latitude
-			course.Location.Longitude = location.Longitude
+			if teachingLocation.Links != nil {
+				if teachingLocation.Links.Accommodation != nil {
+					course.Links.Accommodation = &data.Language{
+						English: teachingLocation.Links.Accommodation.English,
+						Welsh:   teachingLocation.Links.Accommodation.Welsh,
+					}
+				}
+
+				if teachingLocation.Links.StudentUnion != nil {
+					course.Links.StudentUnion = &data.Language{
+						English: teachingLocation.Links.StudentUnion.English,
+						Welsh:   teachingLocation.Links.StudentUnion.Welsh,
+					}
+				}
+			}
 		}
 
 		if qualification != nil {
@@ -256,7 +279,7 @@ func createCourses(fileName string) error {
 			}
 		}
 
-		stats, err := statistics.Get(mongoURI, line[0], line[16], line[17])
+		stats, err := statistics.Get(mongoURI, line[0], line[16], line[17], institution.Country.Code)
 		if err != nil {
 			log.Error(err, log.Data{"func": "statistics.Get", "line_count": count, "csv_line": line})
 			return err
@@ -440,7 +463,7 @@ func getInstitution(key, value string) (institution *institutionData.Institution
 	return
 }
 
-func getLocationID(publicUKPRN, kisCourseID, kisMode string) (locationObject *generalData.Location, err error) {
+func getCourseLocation(ukprn, publicUKPRN, kisCourseID, kisMode string) (locationObject *generalData.Location, err error) {
 	session, err := mgo.Dial(mongoURI)
 	if err != nil {
 		log.ErrorC("unable to create mongo session", err, nil)
@@ -448,7 +471,7 @@ func getLocationID(publicUKPRN, kisCourseID, kisMode string) (locationObject *ge
 	}
 	defer session.Close()
 
-	if err = session.DB("courses").C("locations").Find(bson.M{"public_ukprn": publicUKPRN, "kis_course_id": kisCourseID, "kis_mode": kisMode, "id": bson.M{"$ne": ""}}).One(&locationObject); err != nil {
+	if err = session.DB("courses").C("locations").Find(bson.M{"ukprn": ukprn, "public_ukprn": publicUKPRN, "kis_course_id": kisCourseID, "kis_mode": kisMode, "id": bson.M{"$ne": ""}}).One(&locationObject); err != nil {
 		log.ErrorC("failed to find course location id resource", err, nil)
 	}
 
@@ -468,6 +491,35 @@ func getLocation(ukprn, locID string) (teachingLocation *generalData.Institution
 	}
 
 	return
+}
+
+func findTeachingLocation(missingLocationID bool, ukprnLocations, publicUKPRNLocations []*institutionData.Location, locationID string) (*institutionData.Location, error) {
+
+	teachingLocation := &institutionData.Location{}
+	for _, location := range ukprnLocations {
+		if location.ID == locationID {
+			return location, nil
+		}
+
+		teachingLocation = ukprnLocations[0]
+	}
+
+	for _, location := range publicUKPRNLocations {
+		if location.ID == locationID {
+			return location, nil
+		}
+
+		teachingLocation = publicUKPRNLocations[0]
+	}
+
+	// fallback on first result in array? (starting with public_ukprn institutions)
+	if teachingLocation.ID != "" {
+		return teachingLocation, nil
+	}
+
+	log.Debug("still no location", log.Data{"ukprn_locations": ukprnLocations, "public_ukprn_locations": publicUKPRNLocations})
+
+	return nil, errors.New("teaching location not found in the possible locations associated with institution")
 }
 
 func getQualification(code string) (*generalData.Qualification, error) {

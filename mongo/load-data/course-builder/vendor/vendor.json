@@ -62,6 +62,12 @@
 			"path": "github.com/ofs/alpha-scripts/mongo/load-data/institution-builder/data",
 			"revision": "ee5dcbadf428fc1b2514283f604a32e90096cdb7",
 			"revisionTime": "2019-01-02T11:32:02Z"
+		},
+		{
+			"checksumSHA1": "eDQ6f1EsNf+frcRO/9XukSEchm8=",
+			"path": "github.com/satori/go.uuid",
+			"revision": "36e9d2ebbde5e3f13ab2e25625fd453271d6522e",
+			"revisionTime": "2018-01-03T17:44:51Z"
 		}
 	],
 	"rootPath": "github.com/ofs/alpha-scripts/mongo/load-data/course-builder"

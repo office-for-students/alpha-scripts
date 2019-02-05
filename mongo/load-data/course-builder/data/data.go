@@ -64,6 +64,7 @@ type LengthObject struct {
 
 // LinkList represents a list of links related to resource
 type LinkList struct {
+	Accommodation       *Language `bson:"accommodation,omitempty"`
 	AssessmentMethod    *Language `bson:"assessment_method,omitempty"`         // ASSURL
 	CoursePage          *Language `bson:"course_page,omitempty"`               // CRSEURL
 	EmploymentDetails   *Language `bson:"employment_details,omitempty"`        // EMPLOYURL
@@ -71,13 +72,15 @@ type LinkList struct {
 	Institution         string    `bson:"institution"`
 	LearningAndTeaching *Language `bson:"learning_and_teaching_methods,omitempty"` // LTURL
 	Self                string    `bson:"self"`
+	StudentUnion        *Language `bson:"student_union,omitempty"`
 }
 
 // Location represents an object containing fields to enable one to locate institution
 type Location struct {
-	Changes   bool   `bson:"changes"`
-	Latitude  string `bson:"latitude"`
-	Longitude string `bson:"longitude"`
+	Changes   bool      `bson:"changes"`
+	Latitude  string    `bson:"latitude"`
+	Longitude string    `bson:"longitude"`
+	Name      *Language `bson:"name"`
 }
 
 // Mode represents an object referring to the type of course
