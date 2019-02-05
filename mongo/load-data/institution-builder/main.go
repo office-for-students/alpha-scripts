@@ -7,16 +7,21 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"strings"
 
 	"github.com/ONSdigital/go-ns/log"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
+	handlers "github.com/ofs/alpha-scripts/mongo/get-random-courses/handlers"
 	"github.com/ofs/alpha-scripts/mongo/load-data/institution-builder/data"
 )
 
 var (
+	authToken    string
+	authPassword = "anything"
+
 	mongoURI string
 
 	database             = "institutions"
@@ -26,9 +31,13 @@ var (
 	institutionFileName  = "INSTITUTION"
 	locationFileName     = "LOCATION"
 	fileExtension        = ".csv"
+
+	institutionURL = "https://data.unistats.ac.uk/api/v4/KIS/Institution/"
 )
 
 func main() {
+	flag.StringVar(&authToken, "auth-token", authToken, "authentication token or username")
+	flag.StringVar(&authPassword, "auth-password", authPassword, "authentication password")
 	flag.StringVar(&mongoURI, "mongo-uri", mongoURI, "mongoDB URI")
 	flag.StringVar(&relativeFileLocation, "relative-file-location", relativeFileLocation, "relative location of files")
 	flag.Parse()
@@ -38,12 +47,17 @@ func main() {
 		os.Exit(1)
 	}
 
+	if authToken == "" {
+		log.Error(errors.New("missing auth-header flag"), nil)
+		os.Exit(1)
+	}
+
 	// Remove data from institution collection
 	if err := dropCollection(); err != nil {
 		os.Exit(1)
 	}
 
-	if err := createInstitutions(ukprnLookupFileName); err != nil {
+	if err := createInstitutions(authToken, authPassword, ukprnLookupFileName); err != nil {
 		os.Exit(1)
 	}
 
@@ -58,7 +72,7 @@ func main() {
 	log.Info("Successfully loaded institution data", nil)
 }
 
-func createInstitutions(fileName string) error {
+func createInstitutions(authToken, authPassword, fileName string) error {
 	csvFile, err := os.Open(relativeFileLocation + fileName + fileExtension)
 	if err != nil {
 		log.ErrorC("encountered error immediately when attempting to open file", err, log.Data{"file name": fileName})
@@ -73,6 +87,18 @@ func createInstitutions(fileName string) error {
 		return err
 	}
 
+	var client *http.Client
+
+	client = http.DefaultClient
+
+	request := handlers.Request{
+		Authorization: &handlers.Authorization{
+			Username: authToken,
+			Password: authPassword,
+		},
+		Client: client,
+	}
+
 	count := 0
 	for {
 		line, err := csvReader.Read()
@@ -84,12 +110,17 @@ func createInstitutions(fileName string) error {
 			return err
 		}
 
-		name := strings.Replace(line[1], "/", ",", -1)
+		// Should get the institution names from ukrlp API and not unistats API; will need to apply for a free account?
+		institutionName, _ := request.GetInstitutionName(institutionURL + line[0])
+
+		if institutionName == "" {
+			institutionName = strings.Replace(line[1], "/", ",", -1)
+		}
 
 		institution := &data.Institution{
 			Country:     &data.Country{},
 			Links:       &data.LinkList{},
-			Name:        name,
+			Name:        institutionName,
 			PublicUKPRN: line[0],
 		}
 

@@ -50,6 +50,12 @@
 			"path": "github.com/mgutz/ansi",
 			"revision": "38cc63eaa5e94ba6397e740ebbf81b10d9c2373a",
 			"revisionTime": "2018-08-03T12:52:05Z"
+		},
+		{
+			"checksumSHA1": "/FsUtJQS0SAfKXcMmG7Nr5fi+UY=",
+			"path": "github.com/ofs/alpha-scripts/mongo/get-random-courses/handlers",
+			"revision": "f6ae0f41f3f805b03ac63b3fd100fb535016d2d8",
+			"revisionTime": "2019-01-14T08:48:17Z"
 		}
 	],
 	"rootPath": "github.com/ofs/alpha-scripts/mongo/load-data/institution-builder"
