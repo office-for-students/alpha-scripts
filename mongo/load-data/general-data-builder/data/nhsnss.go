@@ -12,16 +12,16 @@ var NHSNSSQuestions = map[int]string{
 
 // NHSNSS contains the results for the questions on the NSS for students on NHS funded courses
 type NHSNSS struct {
-	AggregationLevel int       `bson:"aggregation_level,omitempty"` // NHSAGG
-	KISMode          string    `bson:"kis_mode"`
-	KISCourseID      string    `bson:"kis_course_id"`
-	NumberOfStudents int       `bson:"number_of_students,omitempty"` // NHSPOP
-	PublicUKPRN      string    `bson:"public_ukprn"`
-	ResponseRate     int       `bson:"response_rate"` // NHSRESP_RATE
-	Surveys          []*Survey `bson:"survey,omitempty"`
-	SubjectCode      string    `bson:"subject_code,omitempty"` // NHSSBJ
-	UKPRN            string    `bson:"ukprn"`
-	Unavailable      string    `bson:"unavailable,omitempty"` // NHSUNAVAILREASON
+	AggregationLevel int            `bson:"aggregation_level,omitempty"` // NHSAGG
+	KISMode          string         `bson:"kis_mode"`
+	KISCourseID      string         `bson:"kis_course_id"`
+	NumberOfStudents int            `bson:"number_of_students,omitempty"` // NHSPOP
+	PublicUKPRN      string         `bson:"public_ukprn"`
+	ResponseRate     int            `bson:"response_rate"` // NHSRESP_RATE
+	Surveys          []*Survey      `bson:"survey,omitempty"`
+	SubjectObject    *SubjectObject `bson:"subject,omitempty"` // NHSSBJ
+	UKPRN            string         `bson:"ukprn"`
+	Unavailable      string         `bson:"unavailable,omitempty"` // NHSUNAVAILREASON
 }
 
 // Survey contains a result for NSS question

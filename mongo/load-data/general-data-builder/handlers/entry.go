@@ -49,7 +49,6 @@ func (c *Common) CreateEntry(database, collection, fileName string, counter chan
 			KISCourseID: line[2],
 			KISMode:     line[3],
 			PublicUKPRN: line[0],
-			SubjectCode: line[7],
 			UKPRN:       line[1],
 			Unavailable: line[4],
 		}
@@ -121,6 +120,17 @@ func (c *Common) CreateEntry(database, collection, fileName string, counter chan
 			entry.ProportionOfStudentsWithOtherQuals, err = strconv.Atoi(line[14])
 			if err != nil {
 				return err
+			}
+		}
+
+		if line[7] != "" {
+			subjectObject, err := m.GetCAHCode("courses", "cah-codes", line[7])
+			if err != nil {
+				log.ErrorC("failed to find cah code resource", err, log.Data{"line_count": count, "entry_resource": entry})
+			}
+
+			if subjectObject != nil {
+				entry.SubjectObject = subjectObject
 			}
 		}
 

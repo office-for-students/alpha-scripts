@@ -46,11 +46,9 @@ func (c *Common) CreateSalary(database, collection, fileName string, counter cha
 		}
 
 		salary := &data.Salary{
-			InstitutionCourseSalarySixMonthsAfterGraduation: &data.Stats{},
 			KISCourseID: line[2],
 			KISMode:     line[3],
 			PublicUKPRN: line[0],
-			SubjectCode: line[8],
 			UKPRN:       line[1],
 			Unavailable: line[4],
 		}
@@ -139,6 +137,17 @@ func (c *Common) CreateSalary(database, collection, fileName string, counter cha
 			salary.ResponseRate, err = strconv.Atoi(line[6])
 			if err != nil {
 				return err
+			}
+		}
+
+		if line[8] != "" {
+			subjectObject, err := m.GetCAHCode("courses", "cah-codes", line[8])
+			if err != nil {
+				log.ErrorC("failed to find cah code resource", err, log.Data{"line_count": count, "salary_resource": salary})
+			}
+
+			if subjectObject != nil {
+				salary.SubjectObject = subjectObject
 			}
 		}
 

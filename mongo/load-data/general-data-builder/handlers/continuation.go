@@ -49,7 +49,6 @@ func (c *Common) CreateContinuation(database, collection, fileName string, count
 			KISCourseID: line[2],
 			KISMode:     line[3],
 			PublicUKPRN: line[0],
-			SubjectCode: line[7],
 			UKPRN:       line[1],
 			Unavailable: line[4],
 		}
@@ -100,6 +99,17 @@ func (c *Common) CreateContinuation(database, collection, fileName string, count
 			continuation.ProportionOfStudentsLeft, err = strconv.Atoi(line[11])
 			if err != nil {
 				return err
+			}
+		}
+
+		if line[7] != "" {
+			subjectObject, err := m.GetCAHCode("courses", "cah-codes", line[7])
+			if err != nil {
+				log.ErrorC("failed to find cah code resource", err, log.Data{"line_count": count, "continuation_resource": continuation})
+			}
+
+			if subjectObject != nil {
+				continuation.SubjectObject = subjectObject
 			}
 		}
 

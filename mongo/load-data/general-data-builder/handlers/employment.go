@@ -49,7 +49,6 @@ func (c *Common) CreateEmployment(database, collection, fileName string, counter
 			KISCourseID: line[2],
 			KISMode:     line[3],
 			PublicUKPRN: line[0],
-			SubjectCode: line[8],
 			UKPRN:       line[1],
 			Unavailable: line[4],
 		}
@@ -114,6 +113,17 @@ func (c *Common) CreateEmployment(database, collection, fileName string, counter
 			employment.ResponseRate, err = strconv.Atoi(line[6])
 			if err != nil {
 				return err
+			}
+		}
+
+		if line[8] != "" {
+			subjectObject, err := m.GetCAHCode("courses", "cah-codes", line[8])
+			if err != nil {
+				log.ErrorC("failed to find cah code resource", err, log.Data{"line_count": count, "employment_resource": employment})
+			}
+
+			if subjectObject != nil {
+				employment.SubjectObject = subjectObject
 			}
 		}
 

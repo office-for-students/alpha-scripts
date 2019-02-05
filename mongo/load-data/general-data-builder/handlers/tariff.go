@@ -49,7 +49,6 @@ func (c *Common) CreateTariff(database, collection, fileName string, counter cha
 			KISCourseID: line[2],
 			KISMode:     line[3],
 			PublicUKPRN: line[0],
-			SubjectCode: line[7],
 			UKPRN:       line[1],
 			Unavailable: line[4],
 		}
@@ -65,6 +64,17 @@ func (c *Common) CreateTariff(database, collection, fileName string, counter cha
 			tariff.NumberOfStudents, err = strconv.Atoi(line[5])
 			if err != nil {
 				return err
+			}
+		}
+
+		if line[7] != "" {
+			subjectObject, err := m.GetCAHCode("courses", "cah-codes", line[7])
+			if err != nil {
+				log.ErrorC("failed to find cah code resource", err, log.Data{"line_count": count, "tariff_resource": tariff})
+			}
+
+			if subjectObject != nil {
+				tariff.SubjectObject = subjectObject
 			}
 		}
 

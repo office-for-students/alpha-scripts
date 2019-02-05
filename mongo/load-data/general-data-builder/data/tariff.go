@@ -25,8 +25,8 @@ type Tariff struct {
 	KISCourseID      string         `bson:"kis_course_id"`
 	NumberOfStudents int            `bson:"number_of_students,omitempty"` // TARPOP
 	PublicUKPRN      string         `bson:"public_ukprn"`
-	Tariffs          []*TariffStats `bson:"tariff,omitempty"`       // T**
-	SubjectCode      string         `bson:"subject_code,omitempty"` // TARSBJ
+	Tariffs          []*TariffStats `bson:"tariff,omitempty"`  // T**
+	SubjectObject    *SubjectObject `bson:"subject,omitempty"` // TARSBJ
 	UKPRN            string         `bson:"ukprn"`
 	Unavailable      string         `bson:"unavailable,omitempty"` // TARUNAVAILREASON
 }

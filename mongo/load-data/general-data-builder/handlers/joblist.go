@@ -50,7 +50,6 @@ func (c *Common) CreateJobList(database, collection, fileName string, counter ch
 			KISCourseID: line[2],
 			KISMode:     line[3],
 			PublicUKPRN: line[0],
-			SubjectCode: line[4],
 			UKPRN:       line[1],
 		}
 
@@ -65,6 +64,17 @@ func (c *Common) CreateJobList(database, collection, fileName string, counter ch
 			jobList.Order, err = strconv.Atoi(line[7])
 			if err != nil {
 				return err
+			}
+		}
+
+		if line[4] != "" {
+			subjectObject, err := m.GetCAHCode("courses", "cah-codes", line[4])
+			if err != nil {
+				log.ErrorC("failed to find cah code resource", err, log.Data{"line_count": count, "job_list_resource": jobList})
+			}
+
+			if subjectObject != nil {
+				jobList.SubjectObject = subjectObject
 			}
 		}
 

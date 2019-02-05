@@ -5,6 +5,7 @@ import (
 
 	"github.com/ONSdigital/go-ns/log"
 	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 	"github.com/ofs/alpha-scripts/mongo/load-data/general-data-builder/data"
 )
 
@@ -27,6 +28,19 @@ func (m *Mongo) Init() (session *mgo.Session, err error) {
 	session.EnsureSafe(&mgo.Safe{WMode: "majority"})
 	session.SetMode(mgo.Strong, true)
 	return session, nil
+}
+
+// AddCAHCode ...
+func (m *Mongo) AddCAHCode(database, collection string, cahObject *data.SubjectObject) (err error) {
+	s := m.Session.Copy()
+	defer s.Close()
+
+	if err = s.DB(database).C(collection).Insert(cahObject); err != nil {
+		log.ErrorC("failed to create CAH code data resource", err, nil)
+		return
+	}
+
+	return
 }
 
 // AddCommonData ...
@@ -258,6 +272,18 @@ func (m *Mongo) AddUCASCourseID(database, collection string, ucasCourseID *data.
 	if err = s.DB(database).C(collection).Insert(ucasCourseID); err != nil {
 		log.ErrorC("failed to create ucas course id resource", err, nil)
 		return
+	}
+
+	return
+}
+
+// GetCAHCode ...
+func (m *Mongo) GetCAHCode(database, collection, subjectCode string) (subjectObject *data.SubjectObject, err error) {
+	s := m.Session.Copy()
+	defer s.Close()
+
+	if err = s.DB(database).C(collection).Find(bson.M{"code": subjectCode}).One(&subjectObject); err != nil {
+		log.ErrorC("failed to find cah code resource", err, nil)
 	}
 
 	return

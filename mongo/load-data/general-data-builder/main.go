@@ -16,6 +16,7 @@ var (
 	mongoURI string
 
 	relativeFileLocation = "../files/"
+	cahCodes             = "CAHCODES"
 	commonData           = "COMMON"
 	continuation         = "CONTINUATION"
 	courseLocation       = "COURSELOCATION"
@@ -39,6 +40,7 @@ var (
 var (
 	wg sync.WaitGroup
 
+	cahCodesCh            = make(chan int)
 	courseLocationCh      = make(chan int)
 	qualificationsCh      = make(chan int)
 	commonDataCh          = make(chan int)
@@ -86,11 +88,25 @@ func main() {
 		RelativeFileLocation: relativeFileLocation,
 	}
 
-	wg.Add(18)
 	go status()
+
+	err = common.CreateCahCodes("courses", "cah-codes", cahCodes, cahCodesCh)
+	if err != nil {
+		log.ErrorC("Unsuccessfully attempted to load cah code data", err, nil)
+		os.Exit(1)
+	}
+
+	wg.Add(18)
 
 	go func() (err error) { // first goroutine as it has the largest dataset
 		err = common.CreateJobList("statistics", "job-list", jobList, jobListCh)
+		wg.Done()
+
+		return
+	}()
+
+	go func() (err error) {
+		err = common.CreateSubject("courses", "subjects", subject, subjectCh)
 		wg.Done()
 
 		return
@@ -105,13 +121,6 @@ func main() {
 
 	go func() (err error) {
 		err = common.CreateQualifications("courses", "qualifications", qualifications, qualificationsCh)
-		wg.Done()
-
-		return
-	}()
-
-	go func() (err error) {
-		err = common.CreateSubject("courses", "subjects", subject, subjectCh)
 		wg.Done()
 
 		return
@@ -231,6 +240,7 @@ func status() {
 	var (
 		totalCount = 0
 
+		cahCodeCount        = 0
 		courseLocationCount = 0
 		qualificationCount  = 0
 		subjectCount        = 0
@@ -257,6 +267,9 @@ func status() {
 
 	for {
 		select {
+		case n := <-cahCodesCh:
+			cahCodeCount += n
+			totalCount += n
 		case n := <-courseLocationCh:
 			courseLocationCount += n
 			totalCount += n
@@ -314,25 +327,26 @@ func status() {
 		case <-t.C:
 			log.Info("Documents added",
 				log.Data{
-					"total_resources":                totalCount,
-					"course_location_resources":      courseLocationCount,
-					"qualification_resources":        qualificationCount,
-					"subject_resources":              subjectCount,
-					"ucas_course_id_resources":       ucasCourseIDCount,
-					"institution_resources":          institutionCount,
-					"institution_location_resources": institutionLocationCount,
-					"common_data_resources":          commonDataCount,
-					"continuation_resources":         continuationCount,
-					"degree_class_resources":         degreeClassCount,
-					"employment_resources":           employmentCount,
-					"entry_resources":                entryCount,
-					"job_list_resources":             jobListCount,
-					"job_type_resources":             jobTypeCount,
-					"leo_resources":                  leoCount,
-					"nhs_nss_resources":              nhsNSSCount,
-					"nss_resources":                  nssCount,
-					"salary_resources":               salaryCount,
-					"tariff_resources":               tariffCount,
+					"total":                 totalCount,
+					"cah_codes":             cahCodeCount,
+					"course_locations":      courseLocationCount,
+					"qualifications":        qualificationCount,
+					"subjects":              subjectCount,
+					"ucas_course_ids":       ucasCourseIDCount,
+					"institutions":          institutionCount,
+					"institution_locations": institutionLocationCount,
+					"common_datas":          commonDataCount,
+					"continuations":         continuationCount,
+					"degree_classes":        degreeClassCount,
+					"employments":           employmentCount,
+					"entries":               entryCount,
+					"job_lists":             jobListCount,
+					"job_types":             jobTypeCount,
+					"leos":                  leoCount,
+					"nhs_nsses":             nhsNSSCount,
+					"nsses":                 nssCount,
+					"salaries":              salaryCount,
+					"tariffs":               tariffCount,
 				},
 			)
 		}

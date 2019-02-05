@@ -49,7 +49,6 @@ func (c *Common) CreateNHSNSS(database, collection, fileName string, counter cha
 			KISCourseID: line[2],
 			KISMode:     line[3],
 			PublicUKPRN: line[0],
-			SubjectCode: line[8],
 			UKPRN:       line[1],
 			Unavailable: line[4],
 		}
@@ -70,6 +69,17 @@ func (c *Common) CreateNHSNSS(database, collection, fileName string, counter cha
 
 		if line[6] != "" {
 			nhsNSS.ResponseRate, err = strconv.Atoi(line[6])
+		}
+
+		if line[8] != "" {
+			subjectObject, err := m.GetCAHCode("courses", "cah-codes", line[8])
+			if err != nil {
+				log.ErrorC("failed to find cah code resource", err, log.Data{"line_count": count, "nhs_nss_resource": nhsNSS})
+			}
+
+			if subjectObject != nil {
+				nhsNSS.SubjectObject = subjectObject
+			}
 		}
 
 		var surveys = []*data.Survey{}

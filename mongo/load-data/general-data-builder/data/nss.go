@@ -33,14 +33,14 @@ var NSSQuestions = map[int]string{
 
 // NSS contains the National Student Survey (NSS) results
 type NSS struct {
-	AggregationLevel int       `bson:"aggregation_level,omitempty"` // NSSAGG
-	KISMode          string    `bson:"kis_mode"`
-	KISCourseID      string    `bson:"kis_course_id"`
-	NumberOfStudents int       `bson:"number_of_students,omitempty"` // NSSPOP
-	PublicUKPRN      string    `bson:"public_ukprn"`
-	ResponseRate     int       `bson:"response_rate"` // NSSRESP_RATE
-	Surveys          []*Survey `bson:"survey,omitempty"`
-	SubjectCode      string    `bson:"subject_code,omitempty"` // NSSSBJ
-	UKPRN            string    `bson:"ukprn"`
-	Unavailable      string    `bson:"unavailable,omitempty"` // NSSUNAVAILREASON
+	AggregationLevel int            `bson:"aggregation_level,omitempty"` // NSSAGG
+	KISMode          string         `bson:"kis_mode"`
+	KISCourseID      string         `bson:"kis_course_id"`
+	NumberOfStudents int            `bson:"number_of_students,omitempty"` // NSSPOP
+	PublicUKPRN      string         `bson:"public_ukprn"`
+	ResponseRate     int            `bson:"response_rate"` // NSSRESP_RATE
+	Surveys          []*Survey      `bson:"survey,omitempty"`
+	SubjectObject    *SubjectObject `bson:"subject,omitempty"` // NSSSBJ
+	UKPRN            string         `bson:"ukprn"`
+	Unavailable      string         `bson:"unavailable,omitempty"` // NSSUNAVAILREASON
 }
