@@ -10,11 +10,13 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/ONSdigital/go-ns/log"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	handlers "github.com/ofs/alpha-scripts/mongo/get-random-courses/handlers"
+	generalData "github.com/ofs/alpha-scripts/mongo/load-data/general-data-builder/data"
 	"github.com/ofs/alpha-scripts/mongo/load-data/institution-builder/data"
 )
 
@@ -22,7 +24,8 @@ var (
 	authToken    string
 	authPassword = "anything"
 
-	mongoURI string
+	mongoURI  string
+	mongoSize = 500
 
 	database             = "institutions"
 	collection           = "institutions"
@@ -39,6 +42,7 @@ func main() {
 	flag.StringVar(&authToken, "auth-token", authToken, "authentication token or username")
 	flag.StringVar(&authPassword, "auth-password", authPassword, "authentication password")
 	flag.StringVar(&mongoURI, "mongo-uri", mongoURI, "mongoDB URI")
+	flag.IntVar(&mongoSize, "mongo-size", mongoSize, "mongo size")
 	flag.StringVar(&relativeFileLocation, "relative-file-location", relativeFileLocation, "relative location of files")
 	flag.Parse()
 
@@ -48,7 +52,7 @@ func main() {
 	}
 
 	if authToken == "" {
-		log.Error(errors.New("missing auth-header flag"), nil)
+		log.Error(errors.New("missing auth-token flag"), nil)
 		os.Exit(1)
 	}
 
@@ -66,6 +70,10 @@ func main() {
 	}
 
 	if err := updateLocations(locationFileName); err != nil {
+		os.Exit(1)
+	}
+
+	if err := updateInstitutionLocations(mongoSize); err != nil {
 		os.Exit(1)
 	}
 
@@ -133,6 +141,78 @@ func createInstitutions(authToken, authPassword, fileName string) error {
 	}
 
 	log.Info("Created institution resources", log.Data{"count": count})
+
+	return nil
+}
+
+func updateInstitutionLocations(size int) error {
+	session, err := mgo.Dial(mongoURI)
+	if err != nil {
+		log.ErrorC("unable to create mongo session", err, nil)
+		return err
+	}
+	defer session.Close()
+
+	it := session.DB("institutions").C("locations").Find(bson.M{}).Batch(size).Iter()
+
+	for {
+		locations := make([]*generalData.InstitutionLocation, size)
+
+		itx := 0
+		for ; itx < len(locations); itx++ {
+			result := generalData.InstitutionLocation{}
+
+			if !it.Next(&result) {
+				break
+			}
+			locations[itx] = &result
+		}
+		if itx == 0 { // No results read from iterator. Nothing more to do.
+			time.Sleep(time.Second * 5)
+			break
+		}
+
+		// This will block if we've reached our concurrecy limit (sem buffer size)
+		if err := updateIstitutionLocations(&locations, itx); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func updateIstitutionLocations(locations *[]*generalData.InstitutionLocation, length int) (err error) {
+	i := 0
+	for i < length {
+		location := &data.Location{
+			ID: (*locations)[i].LocationID,
+			Links: &data.LocationLinks{
+				Accommodation: &data.Language{
+					English: (*locations)[i].AccommodationURL,
+					Welsh:   (*locations)[i].AccommodationURLWelsh,
+				},
+				StudentUnion: &data.Language{
+					English: (*locations)[i].StudentUnionURL,
+					Welsh:   (*locations)[i].StudentUnionURLWelsh,
+				},
+			},
+			Latitude:  (*locations)[i].Latitude,
+			Longitude: (*locations)[i].Longitude,
+			Name: &data.Language{
+				English: (*locations)[i].LocationName,
+				Welsh:   (*locations)[i].LocationNameWelsh,
+			},
+		}
+
+		publicUKPRN := (*locations)[i].UKPRN
+
+		if err := insertLocation(publicUKPRN, location); err != nil {
+			log.ErrorC("failed to update institution resource with institution location data", err, log.Data{"location_resource": location})
+			return err
+		}
+
+		i++
+	}
 
 	return nil
 }
@@ -362,9 +442,9 @@ func insertLocation(publicUKPRN string, location *data.Location) error {
 	selector := bson.M{"public_ukprn": publicUKPRN}
 
 	query := createLocationUpdateQuery(location)
-	log.Info("check my location data", log.Data{"location": location, "selector": selector, "query": query})
+
 	if err = session.DB(database).C(collection).Update(selector, query); err != nil {
-		log.ErrorC("failed to upsert institution resource", err, nil)
+		log.ErrorC("failed to insert location to institution resource", err, nil)
 	}
 
 	return nil

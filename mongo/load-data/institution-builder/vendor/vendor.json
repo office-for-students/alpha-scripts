@@ -56,6 +56,12 @@
 			"path": "github.com/ofs/alpha-scripts/mongo/get-random-courses/handlers",
 			"revision": "f6ae0f41f3f805b03ac63b3fd100fb535016d2d8",
 			"revisionTime": "2019-01-14T08:48:17Z"
+		},
+		{
+			"checksumSHA1": "5/9Npd2gwMYG1YDjBoZLLu5She4=",
+			"path": "github.com/ofs/alpha-scripts/mongo/load-data/general-data-builder/data",
+			"revision": "161ab3b2ba4ec6eec6b4bf4cf2f0f70f1ad885ae",
+			"revisionTime": "2019-02-05T09:18:02Z"
 		}
 	],
 	"rootPath": "github.com/ofs/alpha-scripts/mongo/load-data/institution-builder"
