@@ -36,7 +36,7 @@ func main() {
 	flag.Parse()
 
 	if mongoURI == "" {
-		log.Error(errors.New("missing mongo-url flag"), nil)
+		log.Error(errors.New("missing mongo-uri flag"), nil)
 		os.Exit(1)
 	}
 
