@@ -23,6 +23,11 @@ The mongo uri should look something like the following `localhost:27017` (this i
 when running `make debug`), or `127.0.0.1:27017`. If a username and password are needed follow
 this structure `<username>:<password>@<host>:<port>`
 
+* Set environment variable authentication token to connect to unistats api:
+`export AUTH_TOKEN=<authentication token>`
+
+To obtain an authentication token, you will have to register oneself on unistats api service; register [here](https://dataportal.unistats.ac.uk/Account/Register)
+
 ### How to run scripts
 
 To get the latest data, download from [HESA website](https://www.hesa.ac.uk/support/tools-and-downloads/unistats) and either add csvs to files directory or replace csvs found in files directory with those downloaded or use the data taken from 28th November 2018.
