@@ -260,8 +260,7 @@ func makeRequest(c *os.File, course data.Course, linkName, path string) (linkFai
 			failedURLCh <- 1
 			linkFailure = true
 
-			statusDescription := r.Status
-			line := course.Institution.UKPRN + "," + course.KISCourseID + "," + course.Mode.Code + "," + linkName + "," + path + "," + strconv.Itoa(r.StatusCode) + "," + statusDescription
+			line := course.Institution.UKPRN + "," + course.KISCourseID + "," + course.Mode.Code + "," + linkName + "," + path + "," + strconv.Itoa(r.StatusCode) + "," + r.Status
 			writeToFile(c, filename, line)
 		}
 	}
@@ -271,8 +270,7 @@ func makeRequest(c *os.File, course data.Course, linkName, path string) (linkFai
 		failedURLCh <- 1
 		linkFailure = true
 
-		statusDescription := r.Status
-		line := course.Institution.UKPRN + "," + course.KISCourseID + "," + course.Mode.Code + "," + linkName + "," + path + "," + strconv.Itoa(r.StatusCode) + "," + statusDescription
+		line := course.Institution.UKPRN + "," + course.KISCourseID + "," + course.Mode.Code + "," + linkName + "," + path + "," + strconv.Itoa(r.StatusCode) + "," + r.Status
 		writeToFile(c, filename, line)
 	}
 
@@ -284,7 +282,7 @@ var captureHTTP = regexp.MustCompile(`^(http)(://.*)$`)
 func checkHTTPS(path string) (success bool) {
 	pathComponents := captureHTTP.FindStringSubmatch(path)
 	logData := log.Data{"func": "checkHTTPS", "path_components": pathComponents}
-	// log.Debug("path components?", log.Data{"path_components": pathComponents})
+
 	if len(pathComponents) < 3 {
 		log.Debug("is not http", logData)
 		return
@@ -321,7 +319,6 @@ func checkHTTPS(path string) (success bool) {
 			return http.ErrUseLastResponse
 		},
 		Transport: tr,
-		// Timeout: time.Duration(30 * time.Second),
 	}
 
 	r, err := client.Do(req)

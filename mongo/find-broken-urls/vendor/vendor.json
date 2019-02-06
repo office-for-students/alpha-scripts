@@ -52,10 +52,10 @@
 			"revisionTime": "2018-08-03T12:52:05Z"
 		},
 		{
-			"checksumSHA1": "BoLOH/vZSeGfNhrMG1wPDuYGZVU=",
+			"checksumSHA1": "/0mEtGAz+LkwLvRYJm8xTW02U9Y=",
 			"path": "github.com/ofs/alpha-scripts/mongo/load-data/course-builder/data",
-			"revision": "65a7511ee74a19e677bf26b3f0e0125d752aec40",
-			"revisionTime": "2019-01-02T15:17:47Z"
+			"revision": "49aa655ea466007563a24f8d40e0de35f6f3f91e",
+			"revisionTime": "2019-02-05T15:16:22Z"
 		}
 	],
 	"rootPath": "github.com/ofs/alpha-scripts/mongo/find-broken-urls"
