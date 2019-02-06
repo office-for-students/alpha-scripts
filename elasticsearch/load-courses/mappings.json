@@ -1,0 +1,152 @@
+{
+	"settings": {
+		"index": {
+			"number_of_replicas": 1,
+			"number_of_shards": 5,
+			"analysis": {
+				"filter": {
+					"autocomplete_filter": {
+						"max_gram": 35,
+						"min_gram": 1,
+						"type": "edge_ngram"
+					},
+					"collapse_whitespace_filter": {
+						"pattern": "\\s+",
+						"replacement": " ",
+						"type": "pattern_replace"
+					}
+				},
+				"analyzer": {
+					"raw_analyzer": {
+						"filter": [
+							"lowercase",
+							"collapse_whitespace_filter",
+							"trim"
+						],
+						"tokenizer": "keyword",
+						"type": "custom"
+					}
+				}
+			}
+		}
+	},
+	"mappings": {
+		"course": {
+			"properties": {
+				"kis_course_id": {
+					"fields": {
+						"raw": {
+							"analyzer": "raw_analyzer",
+							"type": "text",
+							"index_options": "docs",
+							"norms": false
+						}
+					},
+					"type": "keyword"
+				},
+				"english_title": {
+					"fields": {
+						"raw": {
+							"analyzer": "raw_analyzer",
+							"type": "text",
+							"index_options": "docs",
+							"norms": false
+						}
+					},
+					"type": "text"
+                },
+                "welsh_title": {
+					"fields": {
+						"raw": {
+							"analyzer": "raw_analyzer",
+							"type": "text",
+							"index_options": "docs",
+							"norms": false
+						}
+					},
+					"type": "text"
+                },
+                "distance_learning": {
+                    "index": false,
+                    "type": "keyword"
+                },
+                "foundation_year": {
+                    "index": false,
+                    "type": "keyword"
+                },
+				"institution": {
+                    "properties": {
+                        "public_ukprn": {
+					        "index": false,
+                            "type": "keyword"
+                        },
+                        "public_ukprn_name": {
+					        "index": false,
+                            "type": "keyword"
+                        },
+                        "ukprn": {
+					        "index": false,
+                            "type": "keyword"
+                        },
+                        "ukprn_name": {
+					        "index": false,
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "link": {
+                    "index": false,
+					"type": "keyword"
+                },
+                "location": {
+                    "properties": {
+                        "latitude": {
+                            "index": false,
+					        "type": "keyword"
+                        },
+                        "longitude": {
+                            "index": false,
+					        "type": "keyword"
+                        }
+                    }
+                },
+                "mode": {
+                    "index": false,
+                    "type": "keyword"
+                },
+				"nhs_funded": {
+					"index": false,
+					"type": "keyword"
+				},
+                "qualification": {
+                    "properties": {
+                        "code": {
+                            "index": false,
+					        "type": "keyword"
+                        },
+                        "label": {
+                            "index": false,
+					        "type": "keyword"
+                        },
+                        "level": {
+                            "index": false,
+					        "type": "keyword"
+                        },
+                        "name": {
+                            "index": false,
+					        "type": "keyword"
+                        }
+                    }
+                },
+				"sandwich_year": {
+					"index": false,
+					"type": "keyword"
+				},
+				"year_abroad": {
+					"index": false,
+					"type": "keyword"
+				}
+			}
+		}
+	}
+}
