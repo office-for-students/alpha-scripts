@@ -41,6 +41,10 @@ Once data is in mongo db, then one can do the following:
 
 * Run `make debug` this shall take approximately several seconds to complete
 
+### Helpful Commands
+
+See [COMMANDLIST.md](COMMANDLIST.md) for a list of helpful commands
+
 ### Contributing
 
 See [CONTRIBUTING](../../CONTRIBUTING.md) for details.
