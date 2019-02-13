@@ -13,3 +13,13 @@ The [mongo/load data scripts](/mongo/load-data) are needed to run the alpha-data
 - [get random courses](/mongo/get-random-courses)
 - [find broken urls](/mongo/find-broken-urls)
 - [load course data into elasticsearch](/elasticsearch/load-courses)
+
+-----------------
+
+### Contributing
+
+See [CONTRIBUTING](/CONTRIBUTING.md) for details.
+
+### License
+
+See [LICENSE](/LICENSE.md) for details.
