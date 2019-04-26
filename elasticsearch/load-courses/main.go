@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -215,19 +216,25 @@ type esDoc struct {
 }
 
 type esCourse struct {
-	KISCourseID      string           `json:"kis_course_id"`
-	EnglishTitle     string           `json:"english_title"`
-	WelshTitle       string           `json:"welsh_title,omitempty"`
-	DistanceLearning string           `json:"distance_learning"`
-	FoundationYear   string           `json:"foundation_year"`
-	Institution      *esInstitution   `json:"institution"`
-	Link             string           `json:"link"`
-	Location         *esLocation      `json:"location"`
-	Mode             string           `json:"mode"`
-	NHSFunded        string           `json:"nhs_funded,omitempty"`
-	Qualification    *esQualification `json:"qualification"`
-	SandwichYear     string           `json:"sandwich_year"`
-	YearAbroad       string           `json:"year_abroad"`
+	KISCourseID          string           `json:"kis_course_id"`
+	EnglishTitle         string           `json:"english_title"`
+	WelshTitle           string           `json:"welsh_title,omitempty"`
+	Country              string           `json:"country"`
+	CountryCode          string           `json:"country_code"`
+	DistanceLearning     string           `json:"distance_learning"`
+	DistanceLearningCode string           `json:"distance_learning_code"`
+	FoundationYear       string           `json:"foundation_year"`
+	HonoursAward         string           `json:"honours_award"`
+	InstitutionName      string           `json:"institution_name"`
+	Institution          *esInstitution   `json:"institution"`
+	LengthOfCourse       string           `json:"length_of_course"`
+	Link                 string           `json:"link"`
+	Location             *esLocation      `json:"location"`
+	Mode                 string           `json:"mode"`
+	NHSFunded            string           `json:"nhs_funded,omitempty"`
+	Qualification        *esQualification `json:"qualification"`
+	SandwichYear         string           `json:"sandwich_year"`
+	YearAbroad           string           `json:"year_abroad"`
 }
 
 type esInstitution struct {
@@ -235,6 +242,7 @@ type esInstitution struct {
 	PublicUKPRNName string `json:"public_ukprn_name"`
 	UKPRN           string `json:"ukprn"`
 	UKPRNName       string `json:"ukprn_name"`
+	LCUKPRNName     string `json:"lc_ukprn_name"`
 }
 
 type esLocation struct {
@@ -250,20 +258,41 @@ type esQualification struct {
 }
 
 func mapResult(ctx context.Context, course *models.Course) *esCourse {
+	// Set honours variable
+	honours := "Not available"
+	if course.Honours {
+		honours = "Available"
+	}
+
+	foundationYear := "Not available"
+	if course.Foundation == "1" {
+		foundationYear = "Optional"
+	} else if foundationYear == "2" {
+		foundationYear = "Compulsory"
+	}
+
+	institutionName := removeUniversityOf(course.Institution.UKPRNName)
 
 	esCourse := &esCourse{
-		KISCourseID:      course.KISCourseID,
-		EnglishTitle:     course.Title.English,
-		WelshTitle:       course.Title.Welsh,
-		DistanceLearning: course.DistanceLearning.Label,
-		FoundationYear:   course.Foundation,
+		KISCourseID:          course.KISCourseID,
+		EnglishTitle:         course.Title.English,
+		WelshTitle:           course.Title.Welsh,
+		Country:              course.Country.Name,
+		CountryCode:          course.Country.Code,
+		DistanceLearning:     course.DistanceLearning.Label,
+		DistanceLearningCode: course.DistanceLearning.Code,
+		FoundationYear:       foundationYear,
+		HonoursAward:         honours,
+		InstitutionName:      institutionName,
 		Institution: &esInstitution{
 			PublicUKPRN:     course.Institution.PublicUKPRN,
 			PublicUKPRNName: course.Institution.PublicUKPRNName,
 			UKPRN:           course.Institution.UKPRN,
-			UKPRNName:       course.Institution.UKPRNName,
+			UKPRNName:       strings.Replace(course.Institution.UKPRNName, ",", "", -1),
+			LCUKPRNName:     strings.Replace(strings.ToLower(course.Institution.UKPRNName), ",", "", -1),
 		},
-		Link: course.Links.Self,
+		LengthOfCourse: course.Length.Code,
+		Link:           course.Links.Self,
 		Location: &esLocation{
 			Latitude:  course.Location.Latitude,
 			Longitude: course.Location.Longitude,
@@ -284,6 +313,20 @@ func mapResult(ctx context.Context, course *models.Course) *esCourse {
 	}
 
 	return esCourse
+}
+
+func removeUniversityOf(institutionName string) string {
+	// lowercase institution name
+	institutionName = strings.ToLower(institutionName)
+
+	// Remove unwanted prefixes
+	institutionName = strings.TrimPrefix(institutionName, "university of ")
+	institutionName = strings.TrimPrefix(institutionName, "the university of ")
+
+	// remove unwanted commas
+	institutionName = strings.Replace(institutionName, ",", "", -1)
+
+	return institutionName
 }
 
 func status(ctx context.Context) {

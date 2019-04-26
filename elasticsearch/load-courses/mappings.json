@@ -14,6 +14,13 @@
 						"pattern": "\\s+",
 						"replacement": " ",
 						"type": "pattern_replace"
+					},
+					"course_name_synonym": {
+						"type": "synonym",
+						"synonyms": [
+							"Maths,maths,Mathematics,mathematics",
+							"Law,Legal,law,legal"
+						]
 					}
 				},
 				"analyzer": {
@@ -21,9 +28,10 @@
 						"filter": [
 							"lowercase",
 							"collapse_whitespace_filter",
-							"trim"
+							"trim",
+							"course_name_synonym"
 						],
-						"tokenizer": "keyword",
+						"tokenizer": "whitespace",
 						"type": "custom"
 					}
 				}
@@ -53,7 +61,7 @@
 							"norms": false
 						}
 					},
-					"type": "text"
+					"type": "keyword"
                 },
                 "welsh_title": {
 					"fields": {
@@ -64,8 +72,16 @@
 							"norms": false
 						}
 					},
-					"type": "text"
-                },
+					"type": "keyword"
+				},
+				"country": {
+                    "index": false,
+                    "type": "keyword"
+				},
+				"country_code": {
+                    "index": false,
+                    "type": "keyword"
+				},
                 "distance_learning": {
                     "index": false,
                     "type": "keyword"
@@ -73,7 +89,15 @@
                 "foundation_year": {
                     "index": false,
                     "type": "keyword"
-                },
+				},
+				"honours_award": {
+					"index": false,
+					"type": "keyword"
+				},
+				"institution_name": {
+					"type": "keyword",
+					"index": false
+				},
 				"institution": {
                     "properties": {
                         "public_ukprn": {
@@ -89,11 +113,19 @@
                             "type": "keyword"
                         },
                         "ukprn_name": {
-					        "index": false,
-                            "type": "keyword"
-                        }
+							"type": "keyword",
+							"index": false
+						},
+						"lc_ukprn_name": {
+							"type": "keyword",
+							"index": false
+						}
                     }
-                },
+				},
+				"length_of_course": {
+					"index": false,
+					"type": "keyword"
+				},
                 "link": {
                     "index": false,
 					"type": "keyword"
