@@ -29,7 +29,7 @@ var (
 	mongoURL        = "localhost:27017"
 	mongoDatabase   = "courses"
 	mongoCollection = "courses"
-	mongoSize       = 2
+	mongoSize       = 500
 )
 
 var (
@@ -46,6 +46,9 @@ func main() {
 	flag.StringVar(&esDestURL, "es-dest-url", esDestURL, "elasticsearch destination URL")
 	flag.StringVar(&esDestIndex, "es-dest-index", esDestIndex, "elasticsearch index")
 	flag.BoolVar(&esSignedRequests, "es-signed-requests", esSignedRequests, "sign elasticsearch requests")
+	flag.Parse()
+
+	log.Namespace = "alpha-elasticsearch-loadinator"
 
 	logData := log.Data{
 		"mongo-url":          mongoURL,
@@ -140,7 +143,7 @@ func sendToES(ctx context.Context, courses *[]*models.Course, length int) {
 
 		i := 0
 		for i < length {
-			course := mapResult(ctx, (*courses)[i])
+			course, courseID := mapResult(ctx, (*courses)[i])
 			if course != nil {
 				doc := &esDoc{
 					Doc: course,
@@ -150,7 +153,7 @@ func sendToES(ctx context.Context, courses *[]*models.Course, length int) {
 					log.ErrorCtx(ctx, errors.WithMessage(err, "error marshal to json"), nil)
 				}
 
-				bulk = append(bulk, []byte("{ \"create\": { \"_index\" : \"courses\", \"_type\" : \"course\", \"_id\": \""+(*courses)[i].ID+"\" } }\n")...)
+				bulk = append(bulk, []byte("{ \"create\": { \"_index\" : \"courses\", \"_type\" : \"course\", \"_id\": \""+courseID+"\" } }\n")...)
 				bulk = append(bulk, b...)
 				bulk = append(bulk, []byte("\n")...)
 			} else {
@@ -171,15 +174,22 @@ func sendToES(ctx context.Context, courses *[]*models.Course, length int) {
 		b, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			log.ErrorCtx(ctx, errors.WithMessage(err, "error reading response body"), nil)
+			return
 		}
 
+		log.InfoCtx(ctx, "reading response", nil)
+
 		if r.StatusCode > 299 {
-			log.ErrorCtx(ctx, errors.New("unexpected post response"), log.Data{"status": r.Status, "r": r, "bulk_body": string(bulk)})
+			log.ErrorCtx(ctx, errors.New("unexpected post response"), log.Data{"status": r.Status, "body": string(b), "bulk_json_body": string(bulk)})
+			return
 		}
+
+		log.InfoCtx(ctx, "checked status", nil)
 
 		var bulkRes esBulkResponse
 		if err := json.Unmarshal(b, &bulkRes); err != nil {
 			log.ErrorCtx(ctx, errors.WithMessage(err, "error unmarshaling json"), nil)
+			return
 		}
 
 		if bulkRes.Errors {
@@ -257,7 +267,7 @@ type esQualification struct {
 	Name  string `json:"name"`
 }
 
-func mapResult(ctx context.Context, course *models.Course) *esCourse {
+func mapResult(ctx context.Context, course *models.Course) (*esCourse, string) {
 	// Set honours variable
 	honours := "Not available"
 	if course.Honours {
@@ -312,7 +322,9 @@ func mapResult(ctx context.Context, course *models.Course) *esCourse {
 		esCourse.NHSFunded = course.NHSFunded.Label
 	}
 
-	return esCourse
+	courseID := course.Institution.PublicUKPRN + course.KISCourseID + course.Mode.Code
+
+	return esCourse, courseID
 }
 
 func removeUniversityOf(institutionName string) string {
