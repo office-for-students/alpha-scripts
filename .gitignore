@@ -6,3 +6,4 @@ build
 *.swp
 mongo/find-broken-urls/broken-urls.csv
 mongo/load-data/files
+mongo/load-data/dump
