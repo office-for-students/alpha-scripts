@@ -1,6 +1,6 @@
 get-list-of-institutions
 ==================
-A script to run through course resources and generate a yml file containing a list of institution names.
+A script to run through course resources and generate a json file containing a list of institution names.
 
 ### Installation
 
@@ -25,6 +25,19 @@ See [load data](https://github.com/office-for-students/alpha-scripts/tree/develo
 #### Running script
 
 * Run `make debug`
+
+### JSON output
+
+```json
+[
+  {
+    "alphabet": "string" (e.g. a, b, c etc.),
+    "name": "string",
+    "order_by_name": string
+  },
+  ...
+]
+```
 
 ### Contributing
 
