@@ -18,6 +18,7 @@ type Course struct {
 	Qualification       *Qualification     `bson:"qualification"`
 	SandwichYear        *Availability      `bson:"sandwich_year"`
 	Statistics          *Statistics        `bson:"statistics,omitempty"`
+	Subject             *Subject           `bson:"subject"`
 	Title               *Language          `bson:"title"`
 	UCASCode            string             `bson:"ucas_code_id,omitempty"`
 	YearAbroad          *Availability      `bson:"year_abroad"`

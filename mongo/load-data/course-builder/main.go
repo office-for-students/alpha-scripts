@@ -279,10 +279,15 @@ func createCourses(fileName string) error {
 			}
 		}
 
-		stats, err := statistics.Get(mongoURI, line[0], line[16], line[17], institution.Country.Code)
+		stats, subject, err := statistics.Get(mongoURI, line[0], line[16], line[17], institution.Country.Code)
 		if err != nil {
 			log.Error(err, log.Data{"func": "statistics.Get", "line_count": count, "csv_line": line})
 			return err
+		}
+
+		course.Subject = &data.Subject{
+			Code: subject.Code,
+			Name: subject.Name,
 		}
 		course.Statistics = stats
 

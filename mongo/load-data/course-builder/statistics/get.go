@@ -30,7 +30,7 @@ var reason = map[int]string{
 }
 
 // Get ...
-func Get(mongoURI, publicUKPRN, kisCourseID, kisMode, countryCode string) (*data.Statistics, error) {
+func Get(mongoURI, publicUKPRN, kisCourseID, kisMode, countryCode string) (*data.Statistics, *data.Subject, error) {
 	stat := statConfig{
 		countryCode: countryCode,
 		kisCourseID: kisCourseID,
@@ -47,9 +47,10 @@ func Get(mongoURI, publicUKPRN, kisCourseID, kisMode, countryCode string) (*data
 		jobType      []*data.JobType
 		leo          []*data.LEO
 		salary       []*data.Salary
+		subject      *data.Subject
 	)
 
-	wg.Add(6)
+	wg.Add(7)
 	go func() {
 		continuation, _ = stat.continuation()
 		wg.Done()
@@ -92,6 +93,13 @@ func Get(mongoURI, publicUKPRN, kisCourseID, kisMode, countryCode string) (*data
 		return
 	}()
 
+	go func() {
+		subject, _ = stat.subject()
+		wg.Done()
+
+		return
+	}()
+
 	wg.Wait()
 
 	stats := &data.Statistics{
@@ -103,7 +111,28 @@ func Get(mongoURI, publicUKPRN, kisCourseID, kisMode, countryCode string) (*data
 		Salary:       salary,
 	}
 
-	return stats, nil
+	return stats, subject, nil
+}
+
+func (stat *statConfig) subject() (subject *data.Subject, err error) {
+	session, err := mgo.Dial(stat.uri)
+	if err != nil {
+		log.ErrorC("unable to create mongo session", err, nil)
+		return
+	}
+	defer session.Close()
+
+	var subjectObject *data.SubjectItem
+	if err = session.DB("courses").C("subjects").Find(bson.M{"public_ukprn": stat.publicUKPRN, "kis_course_id": stat.kisCourseID, "kis_mode": stat.kisMode}).One(&subjectObject); err != nil {
+		log.ErrorC("failed to find subject resource for course", err, nil)
+	}
+
+	subject = &data.Subject{
+		Code: subjectObject.Subject.Code,
+		Name: subjectObject.Subject.Name,
+	}
+
+	return
 }
 
 func (stat *statConfig) continuation() (continuations []*data.Continuation, err error) {
