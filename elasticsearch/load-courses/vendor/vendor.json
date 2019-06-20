@@ -45,23 +45,34 @@
 			"revisionTime": "2018-11-27T14:31:36Z"
 		},
 		{
-			"checksumSHA1": "hBgLmZ/4mCxmnH88mqFKBkpJFUY=",
-			"origin": "github.com/ONSdigital/go-ns/vendor/github.com/mgutz/ansi",
+			"checksumSHA1": "jRou8frV+eGk0Cj6benPsxoEDAc=",
+			"path": "github.com/mattn/go-colorable",
+			"revision": "3a70a971f94a22f2fa562ffcc7a0eb45f5daf045",
+			"revisionTime": "2019-02-22T16:30:38Z"
+		},
+		{
+			"checksumSHA1": "74gCzvJiE6bXX3i4vIVCYhffDHc=",
+			"path": "github.com/mattn/go-isatty",
+			"revision": "1311e847b0cb909da63b5fecfb5370aa66236465",
+			"revisionTime": "2019-05-22T01:25:13Z"
+		},
+		{
+			"checksumSHA1": "CIK3BBNX3nuUQCmNqTQydNfMNKI=",
 			"path": "github.com/mgutz/ansi",
-			"revision": "38cc63eaa5e94ba6397e740ebbf81b10d9c2373a",
-			"revisionTime": "2018-08-03T12:52:05Z"
+			"revision": "9520e82c474b0a04dd04f8a40959027271bab992",
+			"revisionTime": "2017-02-06T15:57:36Z"
 		},
 		{
 			"checksumSHA1": "BGJyPm5kuiZEbF4huBgSIrFebNo=",
 			"path": "github.com/ofs/alpha-dataset-api/apierrors",
-			"revision": "1ccb94cdf8eab72208476d1bdbfa9761cabc3116",
-			"revisionTime": "2019-01-14T08:50:31Z"
+			"revision": "4cd7a92d837401dcc81122d3302b5d3a5991d99e",
+			"revisionTime": "2019-06-19T18:54:45Z"
 		},
 		{
-			"checksumSHA1": "M7fWpPuhfLet+Dsqf7I6Cx7r+Nw=",
+			"checksumSHA1": "gin0huEyYSzBbRVX1qI5515TTik=",
 			"path": "github.com/ofs/alpha-dataset-api/models",
-			"revision": "1ccb94cdf8eab72208476d1bdbfa9761cabc3116",
-			"revisionTime": "2019-01-14T08:50:31Z"
+			"revision": "4cd7a92d837401dcc81122d3302b5d3a5991d99e",
+			"revisionTime": "2019-06-19T18:54:45Z"
 		},
 		{
 			"checksumSHA1": "18YrywDvb67HU8xYF5vqKMgelx0=",
@@ -74,6 +85,12 @@
 			"path": "github.com/smartystreets/go-aws-auth",
 			"revision": "8ef1316913ee4f44bc48c2456e44a5c1c68ea53b",
 			"revisionTime": "2017-05-04T20:50:21Z"
+		},
+		{
+			"checksumSHA1": "Oqmld6WjJtLzayQIz88UqPhA42k=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "8097e1b27ff5e40620836729a9584e91b094b062",
+			"revisionTime": "2019-05-21T15:16:17Z"
 		}
 	],
 	"rootPath": "github.com/ofs/alpha-scripts/elasticsearch/load-courses"

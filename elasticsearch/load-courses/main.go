@@ -244,6 +244,8 @@ type esCourse struct {
 	NHSFunded            string           `json:"nhs_funded,omitempty"`
 	Qualification        *esQualification `json:"qualification"`
 	SandwichYear         string           `json:"sandwich_year"`
+	SubjectCode          string           `json:"subject_code"`
+	SubjectName          string           `json:"subject_name"`
 	YearAbroad           string           `json:"year_abroad"`
 }
 
@@ -315,6 +317,8 @@ func mapResult(ctx context.Context, course *models.Course) (*esCourse, string) {
 			Name:  course.Qualification.Name,
 		},
 		SandwichYear: course.SandwichYear.Label,
+		SubjectCode:  course.Subject.Code,
+		SubjectName:  course.Subject.Name,
 		YearAbroad:   course.YearAbroad.Label,
 	}
 

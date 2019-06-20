@@ -7,7 +7,7 @@ type Course struct {
 	DistanceLearning    *DistanceLearning  `bson:"distance_learning" json:"distance_learning"`
 	Foundation          string             `bson:"foundation_year_availability" json:"foundation_year_availability"` // enum
 	Honours             bool               `bson:"honours_award_provision" json:"honours_award_provision"`
-	ID                  string             `bson:"_id" json:"id"`
+	ID                  string             `bson:"_id"`
 	Institution         *InstitutionObject `bson:"institution" json:"institution"`
 	KISCourseID         string             `bson:"kis_course_id" json:"kis_course_id"`
 	Length              *LengthObject      `bson:"length_of_course" json:"length_of_course"`
@@ -18,6 +18,7 @@ type Course struct {
 	Qualification       *Qualification     `bson:"qualification" json:"qualification"`
 	SandwichYear        *Availability      `bson:"sandwich_year" json:"sandwich_year"`
 	Statistics          *Statistics        `bson:"statistics" json:"statistics"`
+	Subject             *Subject           `bson:"subject" json:"subject"`
 	Title               *Language          `bson:"title" json:"title"`
 	UCASCode            string             `bson:"ucas_code_id,omitempty" json:"ucas_code_id,omitempty"`
 	YearAbroad          *Availability      `bson:"year_abroad" json:"year_abroad"`
@@ -75,9 +76,10 @@ type LinkList struct {
 
 // Location represents an object containing fields to enable one to locate institution
 type Location struct {
-	Changes   bool   `bson:"changes" json:"changes"`
-	Latitude  string `bson:"latitude" json:"latitude"`
-	Longitude string `bson:"longitude" json:"longitude"`
+	Changes   bool      `bson:"changes" json:"changes"`
+	Latitude  string    `bson:"latitude,omitempty" json:"latitude,omitempty"`
+	Longitude string    `bson:"longitude,omitempty" json:"longitude,omitempty"`
+	Name      *Language `bson:"name,omitempty" json:"name,omitempty"`
 }
 
 // NHSFunded represents an object referring to the course having any NHS funded students
