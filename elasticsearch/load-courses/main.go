@@ -258,8 +258,10 @@ type esInstitution struct {
 }
 
 type esLocation struct {
-	Latitude  string `json:"latitude"`
-	Longitude string `json:"longitude"`
+	EnglishName string `json:"english_name"`
+	WelshName   string `json:"welsh_name"`
+	Latitude    string `json:"latitude"`
+	Longitude   string `json:"longitude"`
 }
 
 type esQualification struct {
@@ -320,6 +322,15 @@ func mapResult(ctx context.Context, course *models.Course) (*esCourse, string) {
 		SubjectCode:  course.Subject.Code,
 		SubjectName:  course.Subject.Name,
 		YearAbroad:   course.YearAbroad.Label,
+	}
+
+	if course.Location.Name != nil {
+		if course.Location.Name.English != "" {
+			esCourse.Location.EnglishName = course.Location.Name.English
+		}
+		if course.Location.Name.Welsh != "" {
+			esCourse.Location.WelshName = course.Location.Name.Welsh
+		}
 	}
 
 	if course.NHSFunded != nil {

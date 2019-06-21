@@ -132,6 +132,10 @@
                 },
                 "location": {
                     "properties": {
+						"english_name": {
+							"index": false,
+					        "type": "keyword"
+						},
                         "latitude": {
                             "index": false,
 					        "type": "keyword"
@@ -139,7 +143,11 @@
                         "longitude": {
                             "index": false,
 					        "type": "keyword"
-                        }
+                        },
+						"welsh_name": {
+							"index": false,
+					        "type": "keyword"
+						}
                     }
                 },
                 "mode": {
