@@ -47,7 +47,7 @@ func main() {
 // SubjectObject represents a document containing information on a subject
 type SubjectObject struct {
 	Code        string `json:"code"`
-	EnglishName string `json:"englishname"`
+	EnglishName string `json:"english_name"`
 	WelshName   string `json:"welsh_name"`
 	Level       string `json:"level"`
 }
