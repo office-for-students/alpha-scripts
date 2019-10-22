@@ -20,9 +20,9 @@ Using [Homebrew](https://brew.sh/) to install go
 [
   {
     "code": "string",
-    "english-name": "string",
-    "welsh-name": string,
-    "level": string
+    "english_name": "string",
+    "welsh_name": "string",
+    "level": "string"
   },
   ...
 ]
